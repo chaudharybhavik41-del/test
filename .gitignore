@@ -1,0 +1,12 @@
+.env
+.env.*
+uploads/
+storage/
+cache/
+logs/
+tmp/
+*.log
+vendor/
+node_modules/
+dev/_cache_file_index.json
+.well-known/

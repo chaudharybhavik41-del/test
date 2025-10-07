@@ -1,0 +1,43 @@
+
+# File: stores/_ajax/grn_post.php  (inside your existing GRN post handler, per GRN line)
+# 1) Build category + inputs for measurement (examples for Plate/Section)
+$category = $poLine['category'] ?? 'plate'; // map from your item/category master
+$inputs = [
+  'L_mm'     => (float)($grnLine['L_mm'] ?? 0),
+  'W_mm'     => (float)($grnLine['W_mm'] ?? 0),
+  'Thk_mm'   => (float)($grnLine['Thk_mm'] ?? 0),
+  'Qty'      => (float)($grnLine['pcs'] ?? 1),
+  'length_mm'=> (float)($grnLine['length_mm'] ?? 0),
+  'wt_per_m' => (float)($poLine['wt_per_m'] ?? 0),
+  'boxes'    => (float)($grnLine['boxes'] ?? 0),
+  'kg_per_box' => (float)($poLine['kg_per_box'] ?? 0)
+];
+
+$repo = new \Coupler\RuleRepo($pdo);
+$meas = new \Coupler\MeasurementEngine($repo);
+$glif = new \Coupler\CouplerGL($pdo, $repo);
+
+$res = $meas->compute($category, $inputs);
+$acctQty = (float)$res['acc_qty'];
+
+# 2) Derive accounting rate from PO price basis
+$basis = $poLine['price_basis'] ?? 'per_kg';  // per_kg|per_no|per_m
+$unitPrice = (float)($poLine['unit_price'] ?? 0);
+if ($basis === 'per_kg')      { $acctRate = $unitPrice; }
+elseif ($basis === 'per_no')  { $kgPerNo = max(0.000001, $acctQty / max(1,(float)$inputs['Qty'])); $acctRate = $unitPrice / $kgPerNo; }
+elseif ($basis === 'per_m')   { $len_m = max(0.000001, ((float)$inputs['length_mm'])/1000 * max(1,(float)$inputs['Qty'])); $kg_per_m = $acctQty / $len_m; $acctRate = $unitPrice / max(0.000001,$kg_per_m); }
+else { $acctRate = $unitPrice; }
+
+# 3) Post stock IN strictly in base UOM (e.g., KG). Use your existing stock writer here.
+$owner = ['type'=>$grn['owner_type'] ?? 'company', 'id'=>$grn['owner_id'] ?? null];
+// Example call into your stock posting service (pseudo):
+// StockMoveWriter::in(item_id: $poLine['item_id'], warehouse_id: $grn['warehouse_id'], qty: $acctQty, rate: ($owner['type']==='company' ? $acctRate : 0.0), owner: $owner, lot_meta: [...heat/plate...], refs: [...])
+
+# 4) Queue GL entries (company-owned only typically)
+$glif->queueGLEntries($category, [
+  'doc_type'   => $grn['doc_type'] ?? 'PO-GRN',
+  'owner_type' => $owner['type'],
+  'acct_qty'   => $acctQty,
+  'acct_rate'  => $acctRate,
+  'refs'       => ['grn_id'=>$grn['id'] ?? null, 'po_id'=>$poLine['po_id'] ?? null]
+]);

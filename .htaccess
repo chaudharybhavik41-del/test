@@ -1,0 +1,21 @@
+# Security & routing hardening
+Options -Indexes
+
+# Block dotfiles and sensitive formats
+<FilesMatch "^(\.|.*\.(env|ini|sql|bak|backup|log))$">
+  Require all denied
+</FilesMatch>
+
+# Extra: block diagnostic scripts if you create them
+<FilesMatch "^_(inventory|diag).*\.php$">
+  Require all denied
+</FilesMatch>
+
+# MIME safety
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# UTF-8 default
+AddDefaultCharset utf-8
+RedirectMatch 404 \/\.git

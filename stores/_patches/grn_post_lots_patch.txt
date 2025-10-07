@@ -1,0 +1,17 @@
+# GRN lots creation patch (Phase 1.5)
+$ownerType = $grn['owner_type'] ?? 'company';
+$ownerId   = $grn['owner_id'] ?? null;
+$lotMeta = [
+  'heat_no' => $grnLine['heat_no'] ?? null,
+  'plate_no'=> $grnLine['plate_no'] ?? null,
+  'shape'   => $category === 'plate' ? 'rect' : ($category === 'ismb' ? 'strip' : 'other'),
+  'pcs'     => (int)($grnLine['pcs'] ?? 1),
+  'dims'    => [
+    'L_mm'=>(float)($grnLine['L_mm'] ?? $grnLine['length_mm'] ?? 0),
+    'W_mm'=>(float)($grnLine['W_mm'] ?? 0),
+    'Thk_mm'=>(float)($grnLine['Thk_mm'] ?? 0)
+  ],
+  'grn_line_id' => $grnLine['id'] ?? null
+];
+$lotSvc = new \Coupler\LotService($pdo);
+$lotRes = $lotSvc->createLotAndPieces((int)$poLine['item_id'], (int)$grn['warehouse_id'], (string)$ownerType, $ownerId ? (int)$ownerId : null, (float)$acctQty, $lotMeta);

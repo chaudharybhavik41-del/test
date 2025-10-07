@@ -1,0 +1,85 @@
+/* /public_html/styles.css */
+/* Global UI overrides for EMS Infra ERP (Bootstrap 5.x) */
+
+/* ===== Brand & Layout ===== */
+:root{
+  --brand-primary:#0d6efd;       /* Bootstrap blue */
+  --brand-accent:#198754;         /* Bootstrap green */
+  --sidebar-width:260px;
+}
+html,body{height:100%;}
+body{min-height:100vh;}
+
+/* ===== Header ===== */
+.navbar.sticky-top{backdrop-filter:saturate(140%) blur(2px);}
+
+/* ===== Sidebar ===== */
+.app-sidebar{
+  background:#fff;
+  border-right:1px solid #e9ecef;
+}
+.app-sidebar .nav{
+  padding: .5rem .5rem 1.25rem;
+}
+.app-sidebar .nav-item .nav-link{
+  border-radius:.5rem;
+  padding:.5rem .75rem;
+  color:#364152;
+}
+.app-sidebar .nav-item .nav-link:hover{
+  background:#f8f9fa;
+}
+.app-sidebar .nav-item .nav-link.active{
+  background:#e9f2ff;
+  color:var(--brand-primary);
+  font-weight:600;
+}
+.app-sidebar .text-muted{
+  color:#6b7280 !important;
+}
+
+/* ===== Cards / Tiles ===== */
+.card{border-radius:.75rem;}
+.card-tile{
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.card-tile:hover{
+  transform:translateY(-2px);
+  box-shadow:0 .75rem 1.5rem rgba(0,0,0,.08);
+}
+
+/* ===== Tables ===== */
+.table{font-size:.92rem;}
+.table th{
+  white-space:nowrap;
+  font-weight:600;
+  color:#334155;
+}
+.table-hover tbody tr:hover{background:#f8fafc;}
+.table thead th{
+  border-bottom-width:1px;
+}
+
+/* Wrap tables in a card body for nice padding on small screens */
+.table-responsive{border-radius:.5rem;}
+
+/* ===== Forms ===== */
+.form-control,.form-select{border-radius:.375rem;}
+.input-group-text{border-radius:.375rem;}
+.form-label{font-weight:600;}
+
+/* ===== Badges & Buttons ===== */
+.badge-soft{
+  color:#0f172a;
+  background:#eef2ff;
+  border:1px solid #e5e7eb;
+}
+.btn-icon{
+  display:inline-flex; align-items:center; gap:.35rem;
+}
+.btn-light-hover:hover{background:#f8f9fa;}
+
+/* ===== Utilities ===== */
+.text-muted-sm{color:#6b7280 !important;font-size:.85em;}
+.shadow-soft{box-shadow:0 .5rem 1rem rgba(0,0,0,.06);}
+.rounded-xl{border-radius:1rem;}
