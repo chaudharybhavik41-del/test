@@ -19,3 +19,4 @@ Header always set Referrer-Policy "strict-origin-when-cross-origin"
 # UTF-8 default
 AddDefaultCharset utf-8
 RedirectMatch 404 \/\.git
+RedirectMatch 404 \/\.git
